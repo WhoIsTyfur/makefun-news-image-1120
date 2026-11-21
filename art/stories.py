@@ -37,25 +37,25 @@ LEADS = [
 ]
 
 TILES = [
-    dict(n=4, region="Europe", place="SE Poland · NATO", tag="POLAND: MISSILES", ill=("field_missile",),
+    dict(n=4, region="Europe", place="SE Poland · NATO", tag="POLAND: MISSILES", cap="2 missiles, 1 drone", ill=("field_missile",),
          head="Russian missiles land inside Poland", dek="No one hurt, Poland says."),
-    dict(n=5, region="Europe", place="Brussels · trade", tag="UK–EU DEAL", ill=("ukeu",),
+    dict(n=5, region="Europe", place="Brussels · trade", tag="UK–EU DEAL", cap="Three deals signed", ill=("ukeu",),
          head="UK and EU sign Brexit “reset” deals", dek="Food, carbon, youth visas."),
-    dict(n=6, region="Middle East", place="Antalya · climate", tag="COP31: NO DEAL", ill=("cop",),
+    dict(n=6, region="Middle East", place="Antalya · climate", tag="COP31: NO DEAL", cap="Talks run over", ill=("cop",),
          head="COP31 misses its deadline, no deal", dek="Split over fossil-fuel wording."),
-    dict(n=7, region="Americas", place="New York · tech", tag="NVIDIA −14%", ill=("chip",),
+    dict(n=7, region="Americas", place="New York · tech", tag="NVIDIA −14%", cap="Reuters report", ill=("chip",),
          head="Nvidia falls on report of SEC probe", dek="Reuters: SEC eyes its accounts."),
-    dict(n=8, region="Americas", place="Sinaloa · crime", tag="MEXICO: ARREST", ill=("flag_mx",),
+    dict(n=8, region="Americas", place="Sinaloa · crime", tag="MEXICO: ARREST", cap="FBI Ten Most Wanted", ill=("flag_mx",),
          head="Mexico captures FBI most-wanted capo", dek="“El Chapo Isidro” is held."),
-    dict(n=9, region="Middle East", place="Hodeidah · Yemen", tag="YEMEN: STRIKES", ill=("port_strike",),
+    dict(n=9, region="Middle East", place="Hodeidah · Yemen", tag="YEMEN: STRIKES", cap="Coalition says", ill=("port_strike",),
          head="Saudi-led coalition hits Yemen port", dek="Houthis threaten Saudi ports."),
-    dict(n=10, region="Middle East", place="Off Oman · shipping", tag="HORMUZ: TANKER", ill=("ship_fire",),
+    dict(n=10, region="Middle East", place="Off Oman · shipping", tag="HORMUZ: TANKER", cap="UKMTO alert", ill=("ship_fire",),
          head="Tanker hit and set ablaze near Hormuz", dek="UKMTO: no casualties reported."),
-    dict(n=11, region="Oceania", place="Shenzhen · diplomacy", tag="CHINA–AUSTRALIA", ill=("cnau",),
+    dict(n=11, region="Oceania", place="Shenzhen · diplomacy", tag="CHINA–AUSTRALIA", cap="Xi meets Albanese", ill=("cnau",),
          head="Xi: Australia ties make a “turnaround”", dek="Albanese meets Xi in Shenzhen."),
-    dict(n=12, region="Asia", place="Hanoi · justice", tag="VIETNAM: LAW", ill=("gavel",),
+    dict(n=12, region="Asia", place="Hanoi · justice", tag="VIETNAM: LAW", cap="10 → 4 capital crimes", ill=("gavel",),
          head="Vietnam drops death penalty for drugs", dek="Capital crimes cut from 10 to 4."),
-    dict(n=13, region="Europe", place="Italy · labour", tag="ITALY: STRIKE", ill=("crowd", dict(sign="SCIOPERO")),
+    dict(n=13, region="Europe", place="Italy · labour", tag="ITALY: STRIKE", cap="24-hour strike", ill=("crowd",),
          head="General strike and protests in Europe", dek="Rallies in 100+ Italian cities."),
 ]
 
@@ -63,7 +63,7 @@ TILES = [
 BRIEFS = [
     (14, "Europe", "STOXX 600 has worst week since March", "Europe"),
     (15, "London", "UK retail sales up 0.7% in October", "Europe"),
-    (16, "Paris", "France puts Boone forward for ECB board", "Europe"),
+    (16, "Film", "New Hunger Games film opens in the US", "Americas"),
     (17, "Munich", "Bayern held 1-1 by Köln; Kane hurt", "Europe"),
     (18, "Israel", "Eisenkot sets out 3 paths to a government", "Middle East"),
     (19, "Iran", "IRGC says Hormuz stays shut for now", "Middle East"),
@@ -78,7 +78,7 @@ BRIEFS = [
     (28, "Trump", "threatens tax on offshore data centres", "Americas"),
     (29, "Wall St", "Anthropic shares fall about 9%", "Americas"),
     (30, "Canada", "Report: Hegseth memo curbs defence ties", "Americas"),
-    (31, "Crypto", "Bitcoin falls below $60,000", "Global"),
+    (31, "California", "SpaceX launches Space Force mission", "Americas"),
 ]
 
 # map pins: (number, lon, lat, region)

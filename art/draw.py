@@ -703,6 +703,13 @@ def render(out_path):
         ty = 489 + r * 140
         illus(p, s["ill"], x, ty, tw_, 54)
         p.badge(x + 5, ty + 5, s["tag"], size=13, fill=RED)
+        if s.get("cap"):
+            f = font("sansb", 11)
+            cw2 = p.tw(s["cap"], f) + 10
+            if cw2 > tw_ - 8:
+                ERRORS.append("tile caption too wide: " + s["cap"])
+            p.rect(x + tw_ - cw2 - 4, ty + 54 - 19, cw2, 15, fill=(15, 15, 20))
+            p.text(x + tw_ - cw2 + 1, ty + 54 - 11.5, s["cap"], f, (255, 255, 255), anchor="lm")
         p.numdot(x + 8, ty + 66, s["n"], REGION_COL[s["region"]], r=8, size=10)
         p.fit_line(x + 20, ty + 59, s["place"].upper(), font("sansb", 11), tw_ - 20, REGION_COL[s["region"]], "tile place")
         p.para(x, ty + 75, s["head"], font("serifb", 17), tw_, 20, 2, INK, "tile head")
