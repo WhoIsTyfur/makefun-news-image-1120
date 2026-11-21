@@ -91,8 +91,8 @@ PINS = [
 ]
 
 DATE_CHECK = ("NOT SHOWN, because they broke on 19 November or earlier: the Trump–Xi–Putin meeting in "
-              "Shenzhen, the ICJ's Myanmar genocide ruling, Anthropic's IPO debut and the 16–17 Nov strike "
-              "on two Kyiv bridges. Not yet decided on 20 November: COP31's final text.")
+              "Shenzhen, the ICJ's Myanmar genocide ruling, Anthropic's IPO debut and the US Senate's "
+              "Iran war-powers vote. Not yet decided on 20 November: COP31's final text.")
 
 FOOT_L = "Every story here happened, or was first reported, on Friday 20 November 2026."
 FOOT_R = "Contested claims are attributed · original drawings"
