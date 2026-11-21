@@ -35,6 +35,7 @@ REGION_COL = {
 }
 
 _font_cache = {}
+ERRORS = []
 
 
 def font(name, size):
@@ -102,14 +103,14 @@ class Page:
     def para(self, x, y, s, f, width, lh, max_lines, fill=INK, what=""):
         lines = self.wrap(s, f, width)
         if len(lines) > max_lines:
-            raise ValueError("text overflows %d lines (%s): %r" % (max_lines, what, s))
+            ERRORS.append("overflows %d lines (%s): %r" % (max_lines, what, s))
         for i, ln in enumerate(lines):
             self.text(x, y + i * lh, ln, f, fill)
         return len(lines)
 
     def fit_line(self, x, y, s, f, width, fill=INK, what=""):
         if self.tw(s, f) > width:
-            raise ValueError("line too wide (%s): %r %.0f>%d" % (what, s, self.tw(s, f), width))
+            ERRORS.append("too wide (%s): %r %.0f>%d" % (what, s, self.tw(s, f), width))
         self.text(x, y, s, f, fill)
 
     def badge(self, x, y, s, size=11, fill=RED, fg=(255, 255, 255), pad=5, bold="sansb"):
@@ -176,8 +177,7 @@ def il_cyclone(p, x, y, w, h):
     # coast (land, upper-left)
     p.poly([(x, y), (x + w * 0.42, y), (x + w * 0.30, y + h * 0.35), (x + w * 0.18, y + h * 0.7),
             (x, y + h * 0.85)], fill=(226, 214, 170))
-    p.text(x + 10, y + 10, "ODISHA", font("sansb", 13), (90, 80, 50))
-    p.text(x + 10, y + 27, "INDIA", font("sans", 11), (90, 80, 50))
+    p.text(x + 8, y + h * 0.48, "ODISHA", font("sansb", 12), (90, 80, 50))
     p.text(x + w - 10, y + h - 10, "BAY OF BENGAL", font("sansb", 10), (190, 215, 240), anchor="rd")
     cx, cy = x + w * 0.64, y + h * 0.52
     for k in range(4):
@@ -409,7 +409,88 @@ def il_gavel(p, x, y, w, h):
     p.line([(cx + 2, cy - 18), (cx + 40, cy + 30)], fill=(110, 70, 40), width=5)
 
 
+def il_virus(p, x, y, w, h):
+    p.rect(x, y, w, h, fill=(236, 230, 240))
+    cx, cy, r = x + w * 0.5, y + h * 0.52, h * 0.30
+    for i in range(10):
+        a = i * math.pi / 5
+        p.line([(cx + r * math.cos(a), cy + r * math.sin(a)),
+                (cx + (r + 9) * math.cos(a), cy + (r + 9) * math.sin(a))], fill=(140, 40, 90), width=2.5)
+        p.circle(cx + (r + 10) * math.cos(a), cy + (r + 10) * math.sin(a), 3, fill=(140, 40, 90))
+    p.circle(cx, cy, r, fill=(190, 70, 120))
+    p.circle(cx - r * 0.3, cy - r * 0.2, r * 0.18, fill=(220, 120, 160))
+    p.circle(cx + r * 0.3, cy + r * 0.25, r * 0.14, fill=(220, 120, 160))
+
+
+def il_football(p, x, y, w, h):
+    p.rect(x, y, w, h, fill=(70, 150, 80))
+    for i in range(6):
+        if i % 2:
+            p.rect(x + i * w / 6, y, w / 6, h, fill=(80, 162, 90))
+    p.rect(x + 6, y + 6, w - 12, h - 12, outline=(240, 240, 240), width=1.5)
+    p.line([(x + w / 2, y + 6), (x + w / 2, y + h - 6)], fill=(240, 240, 240), width=1.5)
+    p.circle(x + w / 2, y + h / 2, h * 0.22, outline=(240, 240, 240), width=1.5)
+    bx, by = x + w * 0.70, y + h * 0.55
+    p.circle(bx, by, 8, fill=(255, 255, 255), outline=INK, width=1)
+    p.circle(bx, by, 3, fill=INK)
+
+
+def il_bag(p, x, y, w, h):
+    p.rect(x, y, w, h, fill=(238, 232, 220))
+    bx, by, bw, bh = x + w * 0.32, y + h * 0.34, w * 0.36, h * 0.56
+    p.d.arc([(bx + bw * 0.25) * S, (by - bh * 0.35) * S, (bx + bw * 0.75) * S, (by + bh * 0.25) * S],
+            180, 360, fill=INK, width=int(2.5 * S))
+    p.rect(bx, by, bw, bh, fill=(40, 110, 170))
+    p.rect(bx + 6, by + 10, 10, 18, fill=(250, 200, 80))
+    p.rect(bx + 20, by + 6, 12, 22, fill=(230, 90, 60))
+
+
+def il_port_strike(p, x, y, w, h):
+    p.rect(x, y, w, h * 0.55, fill=(70, 60, 70))
+    p.rect(x, y + h * 0.55, w, h * 0.45, fill=(40, 80, 110))
+    for i in range(3):  # cranes
+        cx = x + w * (0.15 + 0.25 * i)
+        p.line([(cx, y + h * 0.55), (cx, y + h * 0.18), (cx + 22, y + h * 0.18)], fill=(200, 160, 60), width=2.5)
+    ex, ey = x + w * 0.70, y + h * 0.42
+    p.circle(ex, ey, 18, fill=(250, 120, 30))
+    p.circle(ex, ey, 10, fill=(255, 225, 120))
+    p.ellipse(ex - 30, ey - 40, 50, 24, fill=(110, 105, 110))
+
+
+def il_chip(p, x, y, w, h):
+    p.rect(x, y, w, h, fill=(24, 34, 30))
+    cx, cy, cs = x + w * 0.32, y + h * 0.5, h * 0.36
+    for i in range(5):
+        o = -cs + (i + 0.5) * 2 * cs / 5
+        p.line([(cx - cs - 8, cy + o), (cx + cs + 8, cy + o)], fill=(200, 170, 80), width=2)
+        p.line([(cx + o, cy - cs - 8), (cx + o, cy + cs + 8)], fill=(200, 170, 80), width=2)
+    p.rect(cx - cs, cy - cs, 2 * cs, 2 * cs, fill=(60, 180, 90))
+    p.rect(cx - cs * 0.5, cy - cs * 0.5, cs, cs, fill=(30, 120, 60))
+    pts = [(x + w * 0.62, y + h * 0.2), (x + w * 0.72, y + h * 0.35), (x + w * 0.78, y + h * 0.3),
+           (x + w * 0.9, y + h * 0.78)]
+    p.line(pts, fill=(240, 70, 60), width=3)
+    ex, ey = pts[-1]
+    p.poly([(ex - 7, ey - 3), (ex + 3, ey + 8), (ex + 6, ey - 6)], fill=(240, 70, 60))
+
+
+def il_board(p, x, y, w, h):
+    p.rect(x, y, w, h, fill=(150, 110, 70))
+    p.rect(x + 5, y + 5, w - 10, h - 10, fill=(34, 62, 50))
+    f = font("serifi", 17)
+    p.text(x + w * 0.62, y + h * 0.66, "ζ(s) = 0", f, (240, 240, 230), anchor="mm")
+
+
+def il_flag_mx(p, x, y, w, h):
+    il_flag(p, x, y, w, h, [(0, 104, 71), (255, 255, 255), (206, 17, 38)], vertical=True)
+    cx, cy = x + w / 2, y + h / 2
+    p.circle(cx, cy, h * 0.17, fill=(150, 100, 50))
+    p.circle(cx, cy, h * 0.09, fill=(90, 130, 60))
+
+
 ILLUS = {
+    "board": il_board, "flag_mx": il_flag_mx,
+    "virus": il_virus, "football": il_football, "bag": il_bag, "port_strike": il_port_strike,
+    "chip": il_chip,
     "kyiv": il_kyiv, "cyclone": il_cyclone, "markets": il_markets, "ukeu": il_flags_ukeu,
     "cop": il_cop, "field_missile": il_field_missile, "tanks": il_tanks, "crowd": il_crowd,
     "bars": il_bars, "building": il_building, "derrick": il_derrick, "ballot": il_ballot,
@@ -419,8 +500,14 @@ ILLUS = {
 
 
 def illus(p, spec, x, y, w, h):
+    """Draw one illustration, clipped to its own box."""
     name, kw = spec[0], (spec[1] if len(spec) > 1 else {})
+    before = p.im.copy()
     ILLUS[name](p, x, y, w, h, **kw)
+    box = (int(x * S), int(y * S), int((x + w) * S), int((y + h) * S))
+    inside = p.im.crop(box)
+    p.im.paste(before)
+    p.im.paste(inside, box[:2])
 
 
 # ---------------------------------------------------------------------
@@ -586,7 +673,10 @@ def render(out_path):
     p.text(M, 1006, ST.FOOT_L, font("sans", 11), GREY)
     p.text(W - M, 1006, ST.FOOT_R, font("sans", 11), GREY, anchor="ra")
 
+    if ERRORS:
+        raise SystemExit("layout errors:\n  " + "\n  ".join(ERRORS))
     out = p.im.resize((W, H), Image.LANCZOS)
+    out = out.quantize(colors=ST.COLORS, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
     out.save(out_path, optimize=True)
     return out
 
