@@ -12,7 +12,9 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import stories as ST  # noqa: E402
+import importlib  # noqa: E402
+
+ST = importlib.import_module(os.environ.get("STORIES", "stories"))
 
 S = 2                      # supersampling factor
 W = H = 1024
@@ -659,7 +661,7 @@ def render(out_path):
     counts = {}
     for d in ST.LEADS + ST.TILES:
         counts[d["region"]] = counts.get(d["region"], 0) + 1
-    for b in ST.BRIEFS:
+    for b in getattr(ST, "BRIEFS", []):
         counts[b[3]] = counts.get(b[3], 0) + 1
     order = ["Europe", "Asia", "Middle East", "Africa", "Americas", "Oceania", "Global"]
     regions = [(r_, counts[r_]) for r_ in order if r_ in counts]
@@ -695,6 +697,46 @@ def render(out_path):
         p.para(x, ty + 76, s["dek"], font("sans", 14), lw, 18, 3, (40, 42, 48), "lead dek")
 
     p.rect(M, 482, CW, 1.5, fill=RULE)
+    if getattr(ST, "LAYOUT", "grid") == "big":
+        render_big(p, M, CW)
+    else:
+        render_grid(p, M, CW)
+    finish(p, M, CW)
+    if ERRORS:
+        raise SystemExit("layout errors:\n  " + "\n  ".join(ERRORS))
+    out = p.im.resize((W, H), Image.LANCZOS)
+    out = out.quantize(colors=ST.COLORS, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+    out.save(out_path, optimize=True)
+    return out
+
+
+def tile_caption(p, s, x, ty, tw_, ih):
+    if s.get("cap"):
+        f = font("sansb", 11)
+        cw2 = p.tw(s["cap"], f) + 10
+        if cw2 > tw_ - 8:
+            ERRORS.append("tile caption too wide: " + s["cap"])
+        p.rect(x + tw_ - cw2 - 4, ty + ih - 19, cw2, 15, fill=(15, 15, 20))
+        p.text(x + tw_ - cw2 + 1, ty + ih - 11.5, s["cap"], f, (255, 255, 255), anchor="lm")
+
+
+def render_big(p, M, CW):
+    """Variant: fifteen drawn tiles with big headlines, no one-line list."""
+    tw_ = (CW - 4 * 12) / 5
+    for i, s in enumerate(ST.TILES):
+        r, c = divmod(i, 5)
+        x = M + c * (tw_ + 12)
+        ty = 490 + r * 153
+        illus(p, s["ill"], x, ty, tw_, 62)
+        p.badge(x + 5, ty + 5, s["tag"], size=13, fill=RED)
+        tile_caption(p, s, x, ty, tw_, 62)
+        p.numdot(x + 8, ty + 74, s["n"], REGION_COL[s["region"]], r=8, size=10)
+        p.fit_line(x + 20, ty + 67, s["place"].upper(), font("sansb", 11), tw_ - 20, REGION_COL[s["region"]], "tile place")
+        p.para(x, ty + 83, s["head"], font("serifb", 19), tw_, 22, 2, INK, "tile head")
+        p.para(x, ty + 130, s["dek"], font("sans", 14), tw_, 16, 1, (40, 42, 48), "tile dek")
+
+
+def render_grid(p, M, CW):
     # tiles: two rows of five
     tw_ = (CW - 4 * 12) / 5
     for i, s in enumerate(ST.TILES):
@@ -703,13 +745,7 @@ def render(out_path):
         ty = 489 + r * 140
         illus(p, s["ill"], x, ty, tw_, 54)
         p.badge(x + 5, ty + 5, s["tag"], size=13, fill=RED)
-        if s.get("cap"):
-            f = font("sansb", 11)
-            cw2 = p.tw(s["cap"], f) + 10
-            if cw2 > tw_ - 8:
-                ERRORS.append("tile caption too wide: " + s["cap"])
-            p.rect(x + tw_ - cw2 - 4, ty + 54 - 19, cw2, 15, fill=(15, 15, 20))
-            p.text(x + tw_ - cw2 + 1, ty + 54 - 11.5, s["cap"], f, (255, 255, 255), anchor="lm")
+        tile_caption(p, s, x, ty, tw_, 54)
         p.numdot(x + 8, ty + 66, s["n"], REGION_COL[s["region"]], r=8, size=10)
         p.fit_line(x + 20, ty + 59, s["place"].upper(), font("sansb", 11), tw_ - 20, REGION_COL[s["region"]], "tile place")
         p.para(x, ty + 75, s["head"], font("serifb", 17), tw_, 20, 2, INK, "tile head")
@@ -739,6 +775,8 @@ def render(out_path):
         tx = px + p.tw(place + " ", fb)
         p.fit_line(tx, by, txt, fr, bx + colw - tx, INK, "brief %d" % n)
 
+
+def finish(p, M, CW):
     # date check
     y = 959
     p.rect(M, y - 5, CW, 2 * 16 + 9, outline=RED, width=1.5)
@@ -746,13 +784,6 @@ def render(out_path):
     p.para(M + 94, y, ST.DATE_CHECK, font("sans", 12), CW - 104, 16, 2, INK, "date check")
     p.text(M, 1007, ST.FOOT_L, font("sans", 11), GREY)
     p.text(W - M, 1007, ST.FOOT_R, font("sans", 11), GREY, anchor="ra")
-
-    if ERRORS:
-        raise SystemExit("layout errors:\n  " + "\n  ".join(ERRORS))
-    out = p.im.resize((W, H), Image.LANCZOS)
-    out = out.quantize(colors=ST.COLORS, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
-    out.save(out_path, optimize=True)
-    return out
 
 
 if __name__ == "__main__":
