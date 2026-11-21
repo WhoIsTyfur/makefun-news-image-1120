@@ -205,7 +205,7 @@ def il_markets(p, x, y, w, h, rows=(), title=""):
     pts = []
     n = 14
     for i in range(n):
-        px = x + 10 + i * (w * 0.52) / (n - 1)
+        px = x + 10 + i * (w * 0.40) / (n - 1)
         base = y + h * 0.25 + (i / (n - 1)) ** 1.6 * h * 0.58
         jitter = (-8 if i % 3 == 1 else 5 if i % 3 == 2 else 0)
         pts.append((px, base + jitter))
@@ -214,11 +214,11 @@ def il_markets(p, x, y, w, h, rows=(), title=""):
     p.poly([(ex - 7, ey - 4), (ex + 6, ey + 7), (ex - 8, ey + 9)], fill=(235, 60, 60))
     if title:
         p.text(x + 8, y + 6, title, font("sansb", 11), (240, 200, 90))
-    f = font("sansb", 14)
+    f = font("sansb", 17)
     step = (h - 30) / max(1, len(rows))
     for i, (name, val) in enumerate(rows):
-        ry = y + 8 + i * step
-        p.text(x + w * 0.60, ry, name, f, (235, 238, 245))
+        ry = y + 6 + i * step
+        p.text(x + w * 0.49, ry, name, f, (235, 238, 245))
         p.text(x + w - 10, ry, val, f, (255, 110, 100), anchor="ra")
 
 
@@ -402,11 +402,24 @@ def il_pill(p, x, y, w, h):
 
 
 def il_gavel(p, x, y, w, h):
-    p.rect(x, y, w, h, fill=(236, 226, 210))
-    p.rect(x + w * 0.18, y + h * 0.72, w * 0.44, 10, fill=(120, 80, 45))
-    cx, cy = x + w * 0.55, y + h * 0.42
-    p.poly([(cx - 30, cy - 20), (cx + 6, cy - 44), (cx + 20, cy - 24), (cx - 16, cy)], fill=(140, 90, 50))
-    p.line([(cx + 2, cy - 18), (cx + 40, cy + 30)], fill=(110, 70, 40), width=5)
+    """A judge's gavel striking its block, on a parliament-red ground."""
+    p.rect(x, y, w, h, fill=(200, 40, 40))
+    p.rect(x, y + h * 0.80, w, h * 0.20, fill=(150, 25, 30))
+    # yellow star (Vietnam), right side
+    sx, sy, r = x + w * 0.80, y + h * 0.42, h * 0.26
+    pts = []
+    for i in range(10):
+        a = -math.pi / 2 + i * math.pi / 5
+        rr = r if i % 2 == 0 else r * 0.42
+        pts.append((sx + rr * math.cos(a), sy + rr * math.sin(a)))
+    p.poly(pts, fill=(255, 215, 0))
+    # sound block
+    p.rrect(x + w * 0.30, y + h * 0.70, w * 0.30, h * 0.14, 3, fill=(110, 70, 40))
+    # gavel: handle then head, tilted
+    hx, hy = x + w * 0.44, y + h * 0.64
+    p.line([(hx, hy - 6), (hx + w * 0.22, hy - h * 0.48)], fill=(140, 95, 55), width=5)
+    p.poly([(hx - 22, hy - 20), (hx + 2, hy - 34), (hx + 14, hy - 12), (hx - 10, hy + 2)], fill=(120, 78, 44))
+    p.poly([(hx - 26, hy - 18), (hx - 20, hy - 22), (hx - 8, hy + 0), (hx - 14, hy + 4)], fill=(212, 175, 55))
 
 
 def il_virus(p, x, y, w, h):
@@ -487,8 +500,42 @@ def il_flag_mx(p, x, y, w, h):
     p.circle(cx, cy, h * 0.09, fill=(90, 130, 60))
 
 
+def il_cnau(p, x, y, w, h):
+    """China and Australia flags, simplified, with a handshake arrow."""
+    p.rect(x, y, w, h, fill=(232, 236, 244))
+    fy, fh, fw = y + 8, h - 16, w * 0.40
+    cx0 = x + 6
+    p.rect(cx0, fy, fw, fh, fill=(222, 41, 16))
+
+    def star(sx, sy, r, col):
+        pts = []
+        for i in range(10):
+            a = -math.pi / 2 + i * math.pi / 5
+            rr = r if i % 2 == 0 else r * 0.42
+            pts.append((sx + rr * math.cos(a), sy + rr * math.sin(a)))
+        p.poly(pts, fill=col)
+
+    star(cx0 + fw * 0.22, fy + fh * 0.32, fh * 0.20, (255, 222, 0))
+    for k, (dx, dy) in enumerate([(0.42, 0.14), (0.50, 0.30), (0.50, 0.52), (0.42, 0.68)]):
+        star(cx0 + fw * dx, fy + fh * dy, fh * 0.07, (255, 222, 0))
+    ax0 = x + w - 6 - fw
+    p.rect(ax0, fy, fw, fh, fill=(0, 33, 125))
+    q = (ax0, fy, fw / 2, fh / 2)
+    p.line([(q[0], q[1]), (q[0] + q[2], q[1] + q[3])], fill=(255, 255, 255), width=3)
+    p.line([(q[0], q[1] + q[3]), (q[0] + q[2], q[1])], fill=(255, 255, 255), width=3)
+    p.rect(q[0] + q[2] / 2 - 2.5, q[1], 5, q[3], fill=(228, 0, 43))
+    p.rect(q[0], q[1] + q[3] / 2 - 2.5, q[2], 5, fill=(228, 0, 43))
+    star(ax0 + fw * 0.25, fy + fh * 0.76, fh * 0.12, (255, 255, 255))
+    for dx, dy in [(0.75, 0.25), (0.62, 0.50), (0.86, 0.45), (0.75, 0.82)]:
+        star(ax0 + fw * dx, fy + fh * dy, fh * 0.06, (255, 255, 255))
+    mx = x + w / 2
+    p.line([(mx - 10, y + h / 2), (mx + 10, y + h / 2)], fill=INK, width=2)
+    p.poly([(mx + 10, y + h / 2 - 5), (mx + 16, y + h / 2), (mx + 10, y + h / 2 + 5)], fill=INK)
+    p.poly([(mx - 10, y + h / 2 - 5), (mx - 16, y + h / 2), (mx - 10, y + h / 2 + 5)], fill=INK)
+
+
 ILLUS = {
-    "board": il_board, "flag_mx": il_flag_mx,
+    "cnau": il_cnau, "board": il_board, "flag_mx": il_flag_mx,
     "virus": il_virus, "football": il_football, "bag": il_bag, "port_strike": il_port_strike,
     "chip": il_chip,
     "kyiv": il_kyiv, "cyclone": il_cyclone, "markets": il_markets, "ukeu": il_flags_ukeu,
@@ -607,9 +654,29 @@ def render(out_path):
         p.text(cx + cw / 2, y + 23, lab, font("sans", 13), INK, anchor="ma")
     p.rect(M, 200, CW, 1.5, fill=RULE)
 
+    # region bar: how many stories from each region
+    y = 205
+    counts = {}
+    for d in ST.LEADS + ST.TILES:
+        counts[d["region"]] = counts.get(d["region"], 0) + 1
+    for b in ST.BRIEFS:
+        counts[b[3]] = counts.get(b[3], 0) + 1
+    order = ["Europe", "Asia", "Middle East", "Africa", "Americas", "Oceania", "Global"]
+    regions = [(r_, counts[r_]) for r_ in order if r_ in counts]
+    total = sum(cnt for _, cnt in regions)
+    if ("%d STORIES" % total) not in ST.TOPLINE or ("%d REGIONS" % len(regions)) not in ST.TOPLINE:
+        ERRORS.append("TOPLINE counts disagree: %d stories, %d regions" % (total, len(regions)))
+    tot = sum(max(cnt, 3) for _, cnt in regions)
+    rx = M
+    for name, cnt in regions:
+        rw = CW * max(cnt, 3) / tot
+        p.rect(rx, y, rw - 2, 18, fill=REGION_COL[name])
+        p.text(rx + rw / 2 - 1, y + 9, "%s %d" % (name, cnt), font("sansb", 12), (255, 255, 255), anchor="mm")
+        rx += rw
+
     # three leads
-    y = 207
-    IH = 118
+    y = 229
+    IH = 110
     gap = 14
     lw = (CW - 2 * gap) / 3
     for i, s in enumerate(ST.LEADS):
@@ -617,7 +684,7 @@ def render(out_path):
         illus(p, s["ill"], x, y, lw, IH)
         p.badge(x + 7, y + 7, s["tag"], size=17, fill=RED)
         if s.get("src_tag"):
-            f = font("sansb", 11)
+            f = font("sansb", 12)
             tw = p.tw(s["src_tag"], f) + 10
             p.rect(x + 6, y + IH - 23, tw, 17, fill=(15, 15, 20))
             p.text(x + 11, y + IH - 14.5, s["src_tag"], f, (255, 255, 255), anchor="lm")
@@ -627,38 +694,38 @@ def render(out_path):
         p.para(x, ty + 19, s["head"], font("serifb", 23), lw, 27, 2, INK, "lead head")
         p.para(x, ty + 76, s["dek"], font("sans", 14), lw, 18, 3, (40, 42, 48), "lead dek")
 
-    p.rect(M, 466, CW, 1.5, fill=RULE)
+    p.rect(M, 482, CW, 1.5, fill=RULE)
     # tiles: two rows of five
     tw_ = (CW - 4 * 12) / 5
     for i, s in enumerate(ST.TILES):
         r, c = divmod(i, 5)
         x = M + c * (tw_ + 12)
-        ty = 473 + r * 146
-        illus(p, s["ill"], x, ty, tw_, 58)
+        ty = 489 + r * 140
+        illus(p, s["ill"], x, ty, tw_, 54)
         p.badge(x + 5, ty + 5, s["tag"], size=13, fill=RED)
-        p.numdot(x + 8, ty + 70, s["n"], REGION_COL[s["region"]], r=8, size=10)
-        p.fit_line(x + 20, ty + 63, s["place"].upper(), font("sansb", 11), tw_ - 20, REGION_COL[s["region"]], "tile place")
-        p.para(x, ty + 79, s["head"], font("serifb", 17), tw_, 20, 2, INK, "tile head")
-        p.para(x, ty + 121, s["dek"], font("sans", 13), tw_, 16, 1, (40, 42, 48), "tile dek")
+        p.numdot(x + 8, ty + 66, s["n"], REGION_COL[s["region"]], r=8, size=10)
+        p.fit_line(x + 20, ty + 59, s["place"].upper(), font("sansb", 11), tw_ - 20, REGION_COL[s["region"]], "tile place")
+        p.para(x, ty + 75, s["head"], font("serifb", 17), tw_, 20, 2, INK, "tile head")
+        p.para(x, ty + 117, s["dek"], font("sans", 13), tw_, 16, 1, (40, 42, 48), "tile dek")
 
-    p.rect(M, 766, CW, 1.5, fill=RULE)
+    p.rect(M, 772, CW, 1.5, fill=RULE)
     # map + one-liners
-    y = 772
+    y = 777
     p.text(M, y, "WHERE IT HAPPENED", font("sansb", 12), RED)
     mw, mh = 276, 138
     draw_map(p, M, y + 18, mw, mh, ST.PINS)
     lx = M + mw + 14
     p.text(lx, y, "ALSO ON FRIDAY 20 NOVEMBER", font("sansb", 12), RED)
     colw = (W - M - lx - 14) / 2
-    fb = font("sansb", 13)
-    fr = font("sans", 13)
+    fb = font("sansb", 14)
+    fr = font("sans", 14)
     per = (len(ST.BRIEFS) + 1) // 2
     if per > 9:
         raise ValueError("too many briefs")
     for i, (n, place, txt, region) in enumerate(ST.BRIEFS):
         c, r = divmod(i, per)
         bx = lx + c * (colw + 14)
-        by = y + 18 + r * 17
+        by = y + 17 + r * 16.6
         p.text(bx, by, "%d" % n, fb, REGION_COL[region])
         px = bx + 21
         p.text(px, by, place, fb, INK)
@@ -666,12 +733,12 @@ def render(out_path):
         p.fit_line(tx, by, txt, fr, bx + colw - tx, INK, "brief %d" % n)
 
     # date check
-    y = 956
-    p.rect(M, y - 5, CW, 2 * 16 + 10, outline=RED, width=1.5)
+    y = 959
+    p.rect(M, y - 5, CW, 2 * 16 + 9, outline=RED, width=1.5)
     p.text(M + 8, y, "DATE CHECK", font("sansb", 12), RED)
     p.para(M + 94, y, ST.DATE_CHECK, font("sans", 12), CW - 104, 16, 2, INK, "date check")
-    p.text(M, 1006, ST.FOOT_L, font("sans", 11), GREY)
-    p.text(W - M, 1006, ST.FOOT_R, font("sans", 11), GREY, anchor="ra")
+    p.text(M, 1007, ST.FOOT_L, font("sans", 11), GREY)
+    p.text(W - M, 1007, ST.FOOT_R, font("sans", 11), GREY, anchor="ra")
 
     if ERRORS:
         raise SystemExit("layout errors:\n  " + "\n  ".join(ERRORS))
